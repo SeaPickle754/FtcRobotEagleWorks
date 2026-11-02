@@ -9,6 +9,11 @@
 # Files for the ART/Dalvik VM
 *.dex
 
+# Eclipse IDE
+.project
+.classpath
+.settings/
+
 # Java/JDK files
 *.class
 *.hprof
