@@ -35,5 +35,12 @@ public class TransformManager {
 	public double odo_getPositionY(){
 		return odo.getYOffset(DistanceUnit.MM);
 	}
+	// returns heading in radians
+	public double odo_getOrientation() {
+		return odo.getHeading();
+	}
+	public void resetOdo() {
+		odo.resetPosAndIMU();
+	}
 }
 
