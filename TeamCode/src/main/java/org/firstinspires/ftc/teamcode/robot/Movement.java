@@ -99,6 +99,7 @@ public class Movement {
 		}else{
 			FB_mag = 0.f;
 			TR_mag = 0.f;
+			telemetry.addData("TR_mag", TR_mag);
 			LR_mag = 0.f;
 		}
         for (int i=0;i<motors_velocity.length; i++) {
@@ -141,8 +142,8 @@ public class Movement {
     }
 
     private void addMotorTelemetry(int motor_number, Telemetry telemetry){
-        telemetry.addData("Motor_"+motor_number, (": "+
-            motors[motor_number].getVelocity()+"rads/sec,"+ 
+        telemetry.addData("Motor_"+motor_number,
+            (String.format("%.4f",motors[motor_number].getVelocity())+"rads/sec,"+ 
             motors[motor_number].getCurrent()+"A"));
     }
 

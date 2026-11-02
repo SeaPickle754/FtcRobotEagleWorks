@@ -44,7 +44,9 @@ public class MotorController {
 	}
 	// set velocity in rads/sec
 	public void setVelocity(double velocity){
-		motor.setVelocity(velocity, AngleUnit.RADIANS);	
+		// avoid problems with writing a NaN to the motors
+		if(velocity!=Double.NaN)
+			motor.setVelocity(velocity, AngleUnit.RADIANS);	
 	}
 	// gets last power that was written to the motor
 	// DEPRECATED
