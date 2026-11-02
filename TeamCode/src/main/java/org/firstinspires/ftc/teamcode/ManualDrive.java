@@ -57,8 +57,19 @@ public class ManualDrive extends LinearOpMode {
 		InputManager.getInstance().init(gamepad1, gamepad2);
 
         while (opModeIsActive()) {
-            robotMovement.updateMovementFromSticks();
-            robotMovement.UpdateRobot(telemetry);
+        	TransformManager.getInstance().updateOdo();
+        	
+        	send_odo_telemetry();
+            update_movement();
 		}
+    }
+    private void update_movement() {
+    	robotMovement.updateMovementFromSticks();
+    	robotMovement.UpdateRobot(telemetry);
+    }
+    private void send_odo_telemetry() {
+    	telemetry.addData("Odo X", TransformManager.getInstance().odo_getPositionX());
+    	telemetry.addData("Odo Y", TransformManager.getInstance().odo_getPositionY());
+    	telemetry.addData("Odo Heading", TransformManager.getInstance().odo_getOrientation());
     }
 }

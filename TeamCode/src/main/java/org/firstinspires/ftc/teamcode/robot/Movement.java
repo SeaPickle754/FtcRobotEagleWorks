@@ -140,7 +140,6 @@ public class Movement {
         YawPitchRollAngles YPRAimu = imu.getRobotYawPitchRollAngles();
         return YPRAimu.getYaw(AngleUnit.RADIANS);
     }
-
     private void addMotorTelemetry(int motor_number, Telemetry telemetry){
         telemetry.addData("Motor_"+motor_number,
             (String.format("%.4f",motors[motor_number].getVelocity())+"rads/sec,"+ 
