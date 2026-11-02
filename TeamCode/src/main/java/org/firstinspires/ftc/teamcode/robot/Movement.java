@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.util.TrigMath.subtractAngles;
 
 // custom api for controlling the motors
 import org.firstinspires.ftc.teamcode.Components.MotorController;
+import org.firstinspires.ftc.teamcode.managers.TransformManager;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -52,7 +53,7 @@ public class Movement {
             0.0, 0.0,
             0.0, 0.0
     };
-
+    public boolean field_centric = true;
 
 	public Movement(VectorF default_position, double default_heading, HardwareMap hardwareMap) {
         // Set the default position and default heading
@@ -91,9 +92,10 @@ public class Movement {
         // Horizontal Drive
         
 		double FB_mag, TR_mag, LR_mag;
-
+        double LR_drive = movement_vector.get(0);
+        double FB_drive = movement_vector.get(1);
 		if(total_magnitude != 0.f){
-			FB_mag=abs(movement_vector.get(1))/total_magnitude;		
+			FB_mag=abs(movement_vector.get(1))/total_magnitude;
 			TR_mag=abs(turn_rate)/total_magnitude;
 			LR_mag=abs(movement_vector.get(0))/total_magnitude;
 		}else{
@@ -102,16 +104,25 @@ public class Movement {
 			telemetry.addData("TR_mag", TR_mag);
 			LR_mag = 0.f;
 		}
+        if(field_centric) {
+            FB_mag=1.0f;
+            LR_mag=1.0f;
+            double robot_heading = TransformManager.getInstance().odo_getOrientation();
+            double target_heading = atan2(movement_vector.get(0)*-1.0,movement_vector.get(1));
+            double magnitude = movement_vector.magnitude();
+            FB_drive = magnitude*(cos(robot_heading)*cos(target_heading)+sin(robot_heading)*sin(target_heading));
+            LR_drive = -1.0*magnitude*(cos(robot_heading)*sin(target_heading)-sin(robot_heading)*cos(target_heading));
+        }
         for (int i=0;i<motors_velocity.length; i++) {
-            motors_velocity[i]+=movement_vector.get(1)*FB_mag;
+            motors_velocity[i]+=FB_drive*FB_mag;
         }
         //  L/R
-        motors_velocity[0]+=movement_vector.get(0)*LR_mag;
-        motors_velocity[1]-=movement_vector.get(0)*LR_mag;
-        motors_velocity[2]-=movement_vector.get(0)*LR_mag;
-        motors_velocity[3]+=movement_vector.get(0)*LR_mag;
+        motors_velocity[0]+=LR_drive*LR_mag;
+        motors_velocity[1]-=LR_drive*LR_mag;
+        motors_velocity[2]-=LR_drive*LR_mag;
+        motors_velocity[3]+=LR_drive*LR_mag;
 
-        // Turning
+        // Turning (Need to invert certain motors)
         motors_velocity[0]+=turn_rate*TR_mag;
         motors_velocity[1]+=turn_rate*TR_mag;
         motors_velocity[2]-=turn_rate*TR_mag;
