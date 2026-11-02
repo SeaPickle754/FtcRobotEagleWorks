@@ -12,7 +12,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
-
+// can convert between units
+import org.firstinspires.ftc.teamcode.util.Conversion;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -31,15 +32,18 @@ import java.util.Arrays;
 
 public class Movement {
     // SETTINGS
+    // TODO: move this to config
     public static double TURN_SCALE=1; // this doesnt do anything for now
     public static double DRIVE_SCALE=1;
     public static double MOTOR_RPM=6000.0; // The Motors RPM
     public static double GEAR_RATIO=1.0/20.0; // The gear ratio coming out of the motor
+    public static double MOTOR_RPS=(MOTOR_RPM/60)*GEAR_RATIO;
     public static double WHEEL_DIAMETER=92.0/1000.0; // The diameter of the wheels [mm] to [m]
     public static double WHEEL_SPACING=38.0/100.0; // The distance between the left and right wheels [cm] to [m]
     public static double MAX_MOTOR_ACCELERATION=5.0/2.0;
 
     public VectorF position;
+    // i think this is just the stick used for turning?
     public double turn_rate;
     public VectorF movement_vector;
     public IMU imu;
@@ -55,7 +59,7 @@ public class Movement {
         position=default_position;
         turn_rate=0;
         movement_vector=new VectorF(0.0f,0.0f);
-
+       
         // CONTROL HUB ORIENTATION SETTINGS
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
         RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
@@ -114,30 +118,34 @@ public class Movement {
 
         //Set motor Speed
         for (int i=0;i<motors.length; i++) {
-            telemetry.addData("Motor_"+i,motors_velocity[i]+":"+motors[i].getVelocity()+"rads/sec,"+motors[i].getCurrent()+"A");
+            addMotorTelemetry(i, telemetry);
             // all of our calcs use power, but motor uses rads
-            // last arg. is max rps of the motor
-            motors[i].setVelocity(Conversion.power2rads(motors_velocity[i]*100, 3));
+            motors[i].setVelocity(Conversion.power2rads(motors_velocity[i]*100, MOTOR_RPS));
         }
         telemetry.update();
     }
     public void updateMovementFromSticks(){
         float stick_x = InputManager.getInstance().getGamepad1().left_stick_x;
 		float stick_y = InputManager.getInstance().getGamepad1().left_stick_y;
-        float rotate = InputManager.getInstance().getGamepad1().right_stick_x;
-        // evern do my work for me uwu
+        turn_rate = (double)InputManager.getInstance().getGamepad1().right_stick_x;
         // WARNING: IT LOOKS LIKE STICK X AND Y ARE IN THE WRONG PLACES BUT
         // SOMETHING ELSE IN THE CODE IS BROKEN, SO THIS MAKES EVERYTHING WORK
         // MOVEMENT WILL BREAK IF YOU CHANGE THIS BACK
 		movement_vector = new VectorF(stick_y*(float)DRIVE_SCALE, stick_x*(float)DRIVE_SCALE);
-			
-
+	
     }
     // Get heading from the IMU (Control Hub)
     public double getHeading() {
         YawPitchRollAngles YPRAimu = imu.getRobotYawPitchRollAngles();
         return YPRAimu.getYaw(AngleUnit.RADIANS);
     }
+
+    private void addMotorTelemetry(int motor_number, Telemetry telemetry){
+        telemetry.addData("Motor_"+motor_number, (": "+
+            motors[motor_number].getVelocity()+"rads/sec,"+ 
+            motors[motor_number].getCurrent()+"A"));
+    }
+
     /**
      * @param target_turn_rate Turing speed of the robot [rad/s]
      */

@@ -26,7 +26,7 @@ import java.util.Arrays;
 // this provides control of a dc motor
 public class MotorController {
     private final DcMotorEx motor;
-	private float power = 0.f;
+	private double power = 0.f;
 	public MotorController(HardwareMap hardwareMap, String name, DcMotorSimple.Direction direction){
 		// DC Motor EX allows for setVelocity and PIDF support
 		motor = (DcMotorEx)hardwareMap.get(DcMotor.class, name);
@@ -48,7 +48,7 @@ public class MotorController {
 	}
 	// gets last power that was written to the motor
 	// DEPRECATED
-	public float getPower(){return this.power;}
+	public double getPower(){return this.power;}
 	// set power as a percentage
 	// DEPRECATED
 	public void setPower(double power) { motor.setPower(power); this.power=power;}
