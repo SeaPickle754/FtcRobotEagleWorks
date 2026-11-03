@@ -13,6 +13,9 @@ import org.firstinspires.ftc.teamcode.managers.TransformManager;
 
 //needed when we initialize the transform manager
 import org.firstinspires.ftc.teamcode.util.GoBildaPinpointDriver;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.IMU;
+
 
 @TeleOp
 public class ManualDrive extends LinearOpMode {
@@ -25,7 +28,7 @@ public class ManualDrive extends LinearOpMode {
 //        robotSensors = new Sensors(
 //                hardwareMap);
         // Wait until the play button is pressed
-
+        
 
 
 
@@ -33,14 +36,9 @@ public class ManualDrive extends LinearOpMode {
             telemetry.addData("Status", "Ready to Start");
             telemetry.update();
         }
-		
+        IMU imu=hardwareMap.get(IMU.class,"imu");
         odo = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
-        // Send to the robot movement controller Init has ended
-       
-		robotMovement.RobotStart();
-//        launcher.RobotStart();
-        
-		TransformManager.getInstance().init(odo);
+		TransformManager.getInstance().init(odo, imu);
 		InputManager.getInstance().init(gamepad1, gamepad2);
 
         while (opModeIsActive()) {

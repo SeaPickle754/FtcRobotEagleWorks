@@ -7,12 +7,10 @@ import static org.firstinspires.ftc.teamcode.util.TrigMath.subtractAngles;
 import org.firstinspires.ftc.teamcode.Components.MotorController;
 import org.firstinspires.ftc.teamcode.managers.TransformManager;
 
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
 
 
 // can convert between units
@@ -21,7 +19,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.managers.InputManager;
 import static java.lang.Math.abs;
 import static java.lang.Math.atan2;
@@ -48,7 +45,6 @@ public class Movement {
     // i think this is just the stick used for turning?
     public double turn_rate;
     public VectorF movement_vector;
-    public IMU imu;
     public MotorController[] motors;
     public double[] motors_velocity={
             0.0, 0.0,
@@ -61,16 +57,7 @@ public class Movement {
 		turn_rate=0;
         movement_vector=new VectorF(0.0f,0.0f);
        
-        // CONTROL HUB ORIENTATION SETTINGS
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection,usbDirection);
-
-        // Set the IMU (Gyro) Variable
-        // this is fucked rn because i think that there may or may not be an imu in
-        // the actual control hub
-        imu=hardwareMap.get(IMU.class,"imu");
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
+        
 
         // Set DC Motor variables
         // Front Left, Back Left,
@@ -83,9 +70,6 @@ public class Movement {
     // Set default_heading to 0.0 if default_heading isn't given
     public Movement(HardwareMap hardwareMap) {this(0.0,hardwareMap);}
     // TODO: move this to transform manager
-    public void RobotStart() {
-        imu.resetYaw();
-    }
     // =====================================================================
     // Field Centric Calculation Functions
     private double getRobotHeading() {
@@ -168,10 +152,10 @@ public class Movement {
 		movement_vector = new VectorF(stick_y*(float)DRIVE_SCALE, stick_x*(float)DRIVE_SCALE);
 	
     }
-    // Get heading from the IMU (Control Hub)
+    // Get heading from the odometer
     public double getHeading() {
-        YawPitchRollAngles YPRAimu = imu.getRobotYawPitchRollAngles();
-        return YPRAimu.getYaw(AngleUnit.RADIANS);
+        return TransformManager.getInstance().odo_getOrientation();
+        
     }
     private void addMotorTelemetry(int motor_number, Telemetry telemetry){
         telemetry.addData("Motor_"+motor_number,

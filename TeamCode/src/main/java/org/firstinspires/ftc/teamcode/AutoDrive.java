@@ -28,7 +28,6 @@ public class AutoDrive extends LinearOpMode {
             telemetry.addData("Status", "Ready to Start");
             telemetry.update();
         }
-        robotMovement.RobotStart();
         launcher.RobotStart();
         ElapsedTime drive_time = new ElapsedTime();
         drive_time.reset();
