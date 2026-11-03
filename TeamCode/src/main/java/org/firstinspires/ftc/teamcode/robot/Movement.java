@@ -82,9 +82,32 @@ public class Movement {
     }
     // Set default_heading to 0.0 if default_heading isn't given
     public Movement(HardwareMap hardwareMap) {this(0.0,hardwareMap);}
+    // TODO: move this to transform manager
     public void RobotStart() {
         imu.resetYaw();
-    } // Reset Yaw to 0
+    }
+    // =====================================================================
+    // Field Centric Calculation Functions
+    private double getRobotHeading() {
+    	return TransformManager.getInstance().odo_getOrientation();
+    }
+    private double getTargetHeading() {
+         return atan2(movement_vector.get(0)*-1.0,movement_vector.get(1));
+    }
+    private double getMagnitude() {
+        return movement_vector.magnitude();
+    }
+    // get the FB component(?) of the field centric drive
+    private double calculateFBDriveFieldCentric(float robot_heading, float target_heading) {
+        double magnitude = movement_vector.magnitude();
+    	return (cos(robot_heading)*cos(target_heading)+sin(robot_heading)*sin(target_heading));
+    }
+    
+    private double calculateLRDriveFieldCentric(float robot_heading, float target_heading) {
+        double magnitude = movement_vector.magnitude();
+    	return (cos(robot_heading)*sin(target_heading)-sin(robot_heading)*cos(target_heading));
+    }
+    // =======================================================================
     public void UpdateRobot(Telemetry telemetry) {
         // TODO: Add position tracker
         Arrays.fill(motors_velocity,0.0);			
@@ -107,11 +130,10 @@ public class Movement {
         if(field_centric) {
             FB_mag=1.0f;
             LR_mag=1.0f;
-            double robot_heading = TransformManager.getInstance().odo_getOrientation();
-            double target_heading = atan2(movement_vector.get(0)*-1.0,movement_vector.get(1));
-            double magnitude = movement_vector.magnitude();
-            FB_drive = magnitude*(cos(robot_heading)*cos(target_heading)+sin(robot_heading)*sin(target_heading));
-            LR_drive = -1.0*magnitude*(cos(robot_heading)*sin(target_heading)-sin(robot_heading)*cos(target_heading));
+            float robot_heading = (float)getRobotHeading();
+            float target_heading = (float)getTargetHeading();
+            FB_drive = getMagnitude()*calculateFBDriveFieldCentric(robot_heading, target_heading);
+            LR_drive = -1.0*getMagnitude()*calculateLRDriveFieldCentric(robot_heading, target_heading);
         }
         for (int i=0;i<motors_velocity.length; i++) {
             motors_velocity[i]+=FB_drive*FB_mag;
