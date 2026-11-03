@@ -13,6 +13,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+
+
 // can convert between units
 import org.firstinspires.ftc.teamcode.util.Conversion;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -30,6 +32,7 @@ import static java.lang.Math.sqrt;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.Vector;
 
 public class Movement {
     // SETTINGS
@@ -42,8 +45,6 @@ public class Movement {
     public static double WHEEL_DIAMETER=92.0/1000.0; // The diameter of the wheels [mm] to [m]
     public static double WHEEL_SPACING=38.0/100.0; // The distance between the left and right wheels [cm] to [m]
     public static double MAX_MOTOR_ACCELERATION=5.0/2.0;
-
-    public VectorF position;
     // i think this is just the stick used for turning?
     public double turn_rate;
     public VectorF movement_vector;
@@ -55,10 +56,9 @@ public class Movement {
     };
     public boolean field_centric = true;
 
-	public Movement(VectorF default_position, double default_heading, HardwareMap hardwareMap) {
+	public Movement(double default_heading, HardwareMap hardwareMap) {
         // Set the default position and default heading
-        position=default_position;
-        turn_rate=0;
+		turn_rate=0;
         movement_vector=new VectorF(0.0f,0.0f);
        
         // CONTROL HUB ORIENTATION SETTINGS
@@ -81,7 +81,7 @@ public class Movement {
         };
     }
     // Set default_heading to 0.0 if default_heading isn't given
-    public Movement(VectorF default_position, HardwareMap hardwareMap) {this(default_position,0.0,hardwareMap);}
+    public Movement(HardwareMap hardwareMap) {this(0.0,hardwareMap);}
     public void RobotStart() {
         imu.resetYaw();
     } // Reset Yaw to 0
@@ -173,6 +173,10 @@ public class Movement {
      * @param target_position Target global 2D position [m]
      */
     public void lookToward(VectorF target_position) {
+    	// get position from the odometer
+    	float odo_x = (float)TransformManager.getInstance().odo_getPositionX();
+    	float odo_y = (float)TransformManager.getInstance().odo_getPositionY();
+    	VectorF position = new VectorF(odo_x, odo_y);
         VectorF targetVector=target_position.subtracted(position);
         double angle2target=atan2(targetVector.get(1),targetVector.get(0));
         holdHeading(angle2target);

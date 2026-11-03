@@ -17,9 +17,7 @@ public class PositionTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        robotMovement = new Movement(
-                new VectorF(0.0f, 0.0f, 0.0f), // Set default position to 0,0,0
-                hardwareMap); // Pass the ability to interact with hardware
+        robotMovement = new Movement(hardwareMap); // Pass the ability to interact with hardware
         robotSensors = new Sensors(
                 hardwareMap);
         while (opModeInInit()) {

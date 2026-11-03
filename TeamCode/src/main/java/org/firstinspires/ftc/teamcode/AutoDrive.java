@@ -19,9 +19,7 @@ public class AutoDrive extends LinearOpMode {
     @Override
     public void runOpMode() {
         launcher=new Launcher(hardwareMap);
-        robotMovement = new Movement(
-                new VectorF(0.0f, 0.0f, 0.0f), // Set default position to 0,0,0
-                hardwareMap); // Pass the ability to interact with hardware
+        robotMovement = new Movement(hardwareMap); // Pass the ability to interact with hardware
         robotSensors = new Sensors(
                 hardwareMap);
         //double wheel_max_rps=robotMovement.left_motor.getMotorType().getMaxRPM()/60.0;
