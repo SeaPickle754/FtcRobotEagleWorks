@@ -84,12 +84,12 @@ public class Movement {
     // get the FB component(?) of the field centric drive
     private double calculateFBDriveFieldCentric(float robot_heading, float target_heading) {
         double magnitude = movement_vector.magnitude();
-    	return (cos(robot_heading)*cos(target_heading)+sin(robot_heading)*sin(target_heading));
+    	return cos(target_heading-robot_heading);
     }
     
     private double calculateLRDriveFieldCentric(float robot_heading, float target_heading) {
         double magnitude = movement_vector.magnitude();
-    	return (cos(robot_heading)*sin(target_heading)-sin(robot_heading)*cos(target_heading));
+        return sin(target_heading-robot_heading);
     }
     // =======================================================================
     public void UpdateRobot(Telemetry telemetry) {
