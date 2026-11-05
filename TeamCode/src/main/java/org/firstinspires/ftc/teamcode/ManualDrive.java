@@ -39,12 +39,21 @@ public class ManualDrive extends LinearOpMode {
         odo = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
 		TransformManager.getInstance().init(odo, imu);
 		InputManager.getInstance().init(gamepad1, gamepad2);
-
+		boolean is_reset_heading = false;
         while (opModeIsActive()) {
         	TransformManager.getInstance().updateOdo();
         	
         	send_odo_telemetry();
             update_movement();
+            if(is_reset_heading == false &&
+            		InputManager.getInstance().getGamepad1().start) {
+            	is_reset_heading=true;
+            	// reset odo
+            	TransformManager.getInstance().resetOdo();
+            }
+            if(is_reset_heading == true && !InputManager.getInstance().getGamepad1().start) {
+            	is_reset_heading=false;
+            }
 		}
     }
     private void update_movement() {
