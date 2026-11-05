@@ -1,20 +1,22 @@
 package org.firstinspires.ftc.teamcode.managers;
 
+// ODO stuff
 import org.firstinspires.ftc.teamcode.util.GoBildaPinpointDriver;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.util.Configuration;
+
+// IMU Stuff
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.IMU;
 
 
 
 public class TransformManager {
 	boolean isinit = false;
-	static double offsetX = 10;
 	private GoBildaPinpointDriver odo = null;
 	private IMU imu = null;
-	static double offsetY = 10;
 	// Bill Pugh Singleton Code
     // ================================================ 
 		private TransformManager() {}
@@ -31,7 +33,7 @@ public class TransformManager {
 	// imu_hwMap is jst a different name to make the inside of the function easier
 	public void init(GoBildaPinpointDriver odo, IMU imu_hwMap){
 		this.odo = odo;
-		odo.setOffsets(offsetX, offsetY, DistanceUnit.MM);
+		odo.setOffsets(Configuration.OFFSET_X, Configuration.OFFSET_Y, DistanceUnit.MM);
 		odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
 		odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 		odo.resetPosAndIMU();

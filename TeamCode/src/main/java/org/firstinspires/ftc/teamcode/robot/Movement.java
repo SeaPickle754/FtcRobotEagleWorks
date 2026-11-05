@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import static org.firstinspires.ftc.teamcode.util.Misc.Clamp;
 import static org.firstinspires.ftc.teamcode.util.TrigMath.subtractAngles;
-
+import org.firstinspires.ftc.teamcode.util.Configuration;
 // custom api for controlling the motors
 import org.firstinspires.ftc.teamcode.Components.MotorController;
 import org.firstinspires.ftc.teamcode.managers.TransformManager;
@@ -32,16 +32,6 @@ import java.util.Arrays;
 import java.util.Vector;
 
 public class Movement {
-    // SETTINGS
-    // TODO: move this to config
-    public static double TURN_SCALE=1; // this doesnt do anything for now
-    public static double DRIVE_SCALE=1;
-    public static double MOTOR_RPM=6000.0; // The Motors RPM
-    public static double GEAR_RATIO=1.0/20.0; // The gear ratio coming out of the motor
-    public static double MOTOR_RPS=(MOTOR_RPM/60)*GEAR_RATIO;
-    public static double WHEEL_DIAMETER=92.0/1000.0; // The diameter of the wheels [mm] to [m]
-    public static double WHEEL_SPACING=38.0/100.0; // The distance between the left and right wheels [cm] to [m]
-    public static double MAX_MOTOR_ACCELERATION=5.0/2.0;
     // i think this is just the stick used for turning?
     public double turn_rate;
     public VectorF movement_vector;
@@ -63,8 +53,10 @@ public class Movement {
         // Front Left, Back Left,
         // Front  Right, Back  Right
         motors = new MotorController[]{
-                new MotorController(hardwareMap, "motor_1", DcMotorSimple.Direction.REVERSE), new MotorController(hardwareMap, "motor_2", DcMotorSimple.Direction.FORWARD),
-                new MotorController(hardwareMap, "motor_3", DcMotorSimple.Direction.REVERSE), new MotorController(hardwareMap, "motor_4", DcMotorSimple.Direction.FORWARD),
+                new MotorController(hardwareMap, "motor_1", DcMotorSimple.Direction.REVERSE), 
+                new MotorController(hardwareMap, "motor_2", DcMotorSimple.Direction.FORWARD),
+                new MotorController(hardwareMap, "motor_3", DcMotorSimple.Direction.REVERSE), 
+                new MotorController(hardwareMap, "motor_4", DcMotorSimple.Direction.FORWARD),
         };
     }
     // Set default_heading to 0.0 if default_heading isn't given
@@ -138,18 +130,18 @@ public class Movement {
         for (int i=0;i<motors.length; i++) {
             addMotorTelemetry(i, telemetry);
             // all of our calcs use power, but motor uses rads
-            motors[i].setVelocity(Conversion.power2rads(motors_velocity[i]*100, MOTOR_RPS));
+            motors[i].setVelocity(Conversion.power2rads(motors_velocity[i]*100, Configuration.MOTOR_RPS));
         }
         telemetry.update();
     }
     public void updateMovementFromSticks(){
         float stick_x = InputManager.getInstance().getGamepad1().left_stick_x;
 		float stick_y = InputManager.getInstance().getGamepad1().left_stick_y;
-        turn_rate = (double)InputManager.getInstance().getGamepad1().right_stick_x;
+        turn_rate = (double)InputManager.getInstance().getGamepad1().right_stick_x*Configuration.TURN_SCALE;
         // WARNING: IT LOOKS LIKE STICK X AND Y ARE IN THE WRONG PLACES BUT
         // SOMETHING ELSE IN THE CODE IS BROKEN, SO THIS MAKES EVERYTHING WORK
         // MOVEMENT WILL BREAK IF YOU CHANGE THIS BACK
-		movement_vector = new VectorF(stick_y*(float)DRIVE_SCALE, stick_x*(float)DRIVE_SCALE);
+		movement_vector = new VectorF(stick_y*(float)Configuration.DRIVE_SCALE, stick_x*(float)Configuration.DRIVE_SCALE);
 	
     }
     // Get heading from the odometer
