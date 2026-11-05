@@ -121,10 +121,10 @@ public class Movement {
         motors_velocity[3]+=LR_drive*LR_mag;
 
         // Turning (Need to invert certain motors)
-        motors_velocity[0]+=turn_rate*TR_mag;
+        motors_velocity[0]-=turn_rate*TR_mag;
         motors_velocity[1]+=turn_rate*TR_mag;
         motors_velocity[2]-=turn_rate*TR_mag;
-        motors_velocity[3]-=turn_rate*TR_mag;
+        motors_velocity[3]+=turn_rate*TR_mag;
 
         //Set motor Speed
         for (int i=0;i<motors.length; i++) {
