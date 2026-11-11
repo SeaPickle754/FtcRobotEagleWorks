@@ -85,3 +85,5 @@ lint/outputs/
 lint/tmp/
 # lint/reports/
 FtcRobotController.code-workspace
+.nvim.lua
+TeamCode/src/main/java/org/firstinspires/ftc/teamcode/local/
