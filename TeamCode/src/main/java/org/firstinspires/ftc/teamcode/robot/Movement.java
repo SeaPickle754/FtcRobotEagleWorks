@@ -50,13 +50,12 @@ public class Movement {
         
 
         // Set DC Motor variables
-        // Front Left, Back Left,
-        // Front  Right, Back  Right
+        // Back Left, Front Left, Back  Right, Front  Right
         motors = new MotorController[]{
-                new MotorController(hardwareMap, "motor_1", DcMotorSimple.Direction.REVERSE), 
+                new MotorController(hardwareMap, "motor_1", DcMotorSimple.Direction.FORWARD),
                 new MotorController(hardwareMap, "motor_2", DcMotorSimple.Direction.FORWARD),
-                new MotorController(hardwareMap, "motor_3", DcMotorSimple.Direction.REVERSE), 
-                new MotorController(hardwareMap, "motor_4", DcMotorSimple.Direction.FORWARD),
+                new MotorController(hardwareMap, "motor_3", DcMotorSimple.Direction.REVERSE),
+                new MotorController(hardwareMap, "motor_4", DcMotorSimple.Direction.REVERSE),
         };
     }
     // Set default_heading to 0.0 if default_heading isn't given
@@ -86,6 +85,7 @@ public class Movement {
     // =======================================================================
     public void UpdateRobot(Telemetry telemetry) {
         // TODO: Add position tracker
+        // TODO: Need to fix, since motor direction were updated
         Arrays.fill(motors_velocity,0.0);			
 		double total_magnitude=abs(movement_vector.get(0))+abs(movement_vector.get(1))+abs(turn_rate);
         // Horizontal Drive
