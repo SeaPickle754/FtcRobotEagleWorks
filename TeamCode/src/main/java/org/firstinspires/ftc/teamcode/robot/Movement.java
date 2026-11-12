@@ -26,7 +26,7 @@ import static java.lang.Math.cos;
 import static java.lang.Math.min;
 import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
-
+ 
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Vector;
@@ -61,7 +61,6 @@ public class Movement {
     }
     // Set default_heading to 0.0 if default_heading isn't given
     public Movement(HardwareMap hardwareMap) {this(0.0,hardwareMap);}
-    // TODO: move this to transform manager
     // =====================================================================
     // Field Centric Calculation Functions
     private double getRobotHeading() {
@@ -85,7 +84,6 @@ public class Movement {
     }
     // =======================================================================
     public void UpdateRobot(Telemetry telemetry) {
-        // TODO: Add position tracker
         Arrays.fill(motors_velocity,0.0);			
 		double total_magnitude=abs(movement_vector.get(0))+abs(movement_vector.get(1))+abs(turn_rate);
         // Horizontal Drive
@@ -152,7 +150,7 @@ public class Movement {
     private void addMotorTelemetry(int motor_number, Telemetry telemetry){
         telemetry.addData("Motor_"+motor_number,
             (String.format("%.4f",motors[motor_number].getVelocity())+"rads/sec,"+ 
-            motors[motor_number].getCurrent()+"A"));
+            String.format("%.3f", (motors[motor_number].getCurrent())+"A")));
     }
 
     /**
