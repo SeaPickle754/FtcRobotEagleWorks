@@ -6,11 +6,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 // robot movement
 import org.firstinspires.ftc.teamcode.robot.Movement;
+import org.firstinspires.ftc.teamcode.robot.Launcher;
 
 // managers
 import org.firstinspires.ftc.teamcode.managers.InputManager;
 import org.firstinspires.ftc.teamcode.managers.TransformManager;
-
 //needed when we initialize the transform manager
 import org.firstinspires.ftc.teamcode.util.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -19,12 +19,14 @@ import com.qualcomm.robotcore.hardware.IMU;
 @TeleOp
 public class ManualDrive extends LinearOpMode {
     public Movement robotMovement;
+    public Launcher launcher;
     GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
     @Override
     public void runOpMode() {
 //        launcher=new Launcher(hardwareMap);
         robotMovement = new Movement(hardwareMap); // Pass the ability to interact with hardware
-//        robotSensors = new Sensors(
+        launcher = new Launcher(hardwareMap);
+        //        robotSensors = new Sensors(
 //                hardwareMap);
         // Wait until the play button is pressed
         
@@ -44,7 +46,9 @@ public class ManualDrive extends LinearOpMode {
         	TransformManager.getInstance().updateOdo();
         	
         	send_odo_telemetry();
+            launcher.update(telemetry);
             update_movement();
+
             if(is_reset_heading == false &&
             		InputManager.getInstance().getGamepad1().start) {
             	is_reset_heading=true;
@@ -53,6 +57,10 @@ public class ManualDrive extends LinearOpMode {
             }
             if(is_reset_heading == true && !InputManager.getInstance().getGamepad1().start) {
             	is_reset_heading=false;
+            }
+            // launch ball 
+            if(InputManager.getInstance().getGamepad1().left_trigger>=0.2){
+                launcher.launch_ball();
             }
 		}
     }

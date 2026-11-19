@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.atan2;
@@ -18,56 +19,72 @@ import static java.lang.Math.sqrt;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.util.Configuration;
+import org.firstinspires.ftc.teamcode.util.Conversion;
+import org.firstinspires.ftc.teamcode.Components.MotorController;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+
+enum FLYWHEEL_STATE{
+        FEEDING_BALL,
+        FIRING,
+        IDLE,
+};
 
 public class Launcher {
     // PID Settings
-    public static final double PID_P=10.0;
-    public static final double PID_I=3.0;
-    public static final double PID_D=0.0;
+    MotorController launch_motor;
+    // we have 2 motors for the intake motor. 
+    // There is a left side motor and right side motor.
+    // If they go the wrong direction, change the motor direction on initialization
+    MotorController intakeMotorL;
+    MotorController intakeMotorR;   
+    
+    FLYWHEEL_STATE current_state = FLYWHEEL_STATE.IDLE;
 
-    Movement movement;
-    public double flywheel_rps=0.0;
-    public boolean feeder=false;
-
-    public DcMotorEx flywheel_motor; // [RPS]
-    public DcMotor feeder_motor;
-    public Servo agitator_servo;
     public Launcher(HardwareMap hardwareMap) {
+        launch_motor = new MotorController(hardwareMap, "launch_motor", DcMotorSimple.Direction.REVERSE);
+        intakeMotorL = new MotorController(hardwareMap, "intakeL", DcMotorSimple.Direction.REVERSE);
+        intakeMotorR = new MotorController(hardwareMap, "intakeR", DcMotorSimple.Direction.FORWARD);
+                                                                 // ^^^^ Change this if the motors fight each other
+    
+        }
 
-        // map Motors
-        flywheel_motor=(DcMotorEx)hardwareMap.get(DcMotor.class,"flywheel_motor");
-
-        feeder_motor=hardwareMap.get(DcMotor.class,"feeder_motor");
-        feeder_motor.setDirection(DcMotorSimple.Direction.REVERSE);
-        agitator_servo=hardwareMap.get(Servo.class,"agitator_servo");
-    }
-    public Launcher(HardwareMap hardwareMap,Movement movement_inst) {
-        this(hardwareMap);
-        movement = movement_inst;
-    }
-    public void RobotStart() {
+    public void launch_ball(){
+        // calculate speed to go backwards and feed ball in rads/sec
+        double speed = ((Configuration.MOTOR_RPM/Configuration.FLYWHEEL_GEAR_RATIO)*Configuration.LAUNCHER_FEED_SPEED)*(Math.PI/30);
+        speed*=-1;
+        // set backwards & wait until the motor 
+        launch_motor.setVelocity(speed);
+        current_state = FLYWHEEL_STATE.FEEDING_BALL;
 
     }
-    public void UpdateRobot() {
-        flywheel_motor.setVelocity(min(flywheel_rps,120.0)*60.0, AngleUnit.DEGREES);
-        if (feeder) {
-            feeder_motor.setPower(1);
-        } else {
-            feeder_motor.setPower(0);
+    
+
+
+    public void update(Telemetry telemetry){
+        // send the motor's current to the telemetry console
+        telemetry.addData("Launcher Motor Current", String.format("%.3f", launch_motor.getCurrent(CurrentUnit.AMPS)));
+        
+        if(current_state == FLYWHEEL_STATE.FEEDING_BALL){
+            // if we detect the endstop while going backwards,
+            // switch the launcher to firing mode and spin full speed forward
+            if(detect_endstop(launch_motor)){
+                current_state = FLYWHEEL_STATE.FIRING;
+                launch_motor.setVelocity(Configuration.MOTOR_RPM*Configuration.LAUNCH_MULTIPLIER);
+            }
+        }
+        else if(current_state == FLYWHEEL_STATE.FIRING){
+            if(detect_endstop(launch_motor)){
+                launch_motor.setVelocity(0);
+                current_state = FLYWHEEL_STATE.IDLE;
+            }
         }
     }
-    public void setRPS(double rps) {
-        flywheel_rps=rps;
-    }
-    public double getPower() {
-        return flywheel_rps / 120.0;
-    }
-    public void setFeederOnOff(boolean state) {
-        feeder=state;
-    }
-    public void debugData(Telemetry telemetry) {
-        PIDFCoefficients pidCoefficients = flywheel_motor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-        telemetry.addData("PID Settings", String.format("P:%f I:%f D:%f F:%f", pidCoefficients.p,pidCoefficients.i,pidCoefficients.d,pidCoefficients.f));
-        telemetry.update();
+
+    private boolean detect_endstop(MotorController motor){
+        if(motor.getCurrent(CurrentUnit.AMPS)>=Configuration.ENDSTOP_THRESHOLD_CURRENT){
+            return true;
+        }
+        return false;
     }
 }
