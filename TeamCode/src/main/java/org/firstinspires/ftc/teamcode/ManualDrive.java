@@ -59,7 +59,8 @@ public class ManualDrive extends LinearOpMode {
             	is_reset_heading=false;
             }
             // launch ball 
-            if(InputManager.getInstance().getGamepad1().left_trigger>=0.2){
+            if(InputManager.getInstance().getGamepad1().left_trigger>=0.2&&
+                launcher.isReadyToFire()){
                 launcher.launch_ball();
             }
 		}

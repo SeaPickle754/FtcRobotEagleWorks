@@ -59,7 +59,12 @@ public class Launcher {
 
     }
     
-
+    public bool isReadyToFire(){
+        if(current_state = FLYWHEEL_STATE.IDLE){
+            return true;
+        }
+        return false;
+    }
 
     public void update(Telemetry telemetry){
         // send the motor's current to the telemetry console
