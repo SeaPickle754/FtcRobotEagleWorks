@@ -46,9 +46,7 @@ public class Movement {
         // Set the default position and default heading
 		turn_rate=0;
         movement_vector=new VectorF(0.0f,0.0f);
-       
         
-
         // Set DC Motor variables
         // Back Left, Front Left, Back  Right, Front  Right
         motors = new MotorController[]{
@@ -88,7 +86,6 @@ public class Movement {
         // TODO: Need to fix, since motor direction were updated
         Arrays.fill(motors_velocity,0.0);			
 		double total_magnitude=abs(movement_vector.get(0))+abs(movement_vector.get(1))+abs(turn_rate);
-        // Horizontal Drive
         
 		double FB_mag, TR_mag, LR_mag;
         double LR_drive = movement_vector.get(0);
@@ -142,7 +139,6 @@ public class Movement {
         // SOMETHING ELSE IN THE CODE IS BROKEN, SO THIS MAKES EVERYTHING WORK
         // MOVEMENT WILL BREAK IF YOU CHANGE THIS BACK
 		movement_vector = new VectorF(stick_y*(float)Configuration.DRIVE_SCALE, stick_x*(float)Configuration.DRIVE_SCALE);
-	
     }
     // Get heading from the odometer
     public double getHeading() {
