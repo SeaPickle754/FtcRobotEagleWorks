@@ -71,6 +71,10 @@ public class MotorController {
 			return true;
 		}
 	}
+	// does not hard stop
+	public void stop(){
+		motor.setVelocity(0);
+	}
 	// returns if is disabled
 	public boolean isDisabled(){
 		return !motor.isMotorEnabled();

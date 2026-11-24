@@ -59,6 +59,20 @@ public class Launcher {
 
     }
     
+    public void startReverseFeed(){
+        intakeMotorL.setVelocity(-Configuration.INTAKE_SPEED);
+        intakeMotorR.setVelocity(-Configuration.INTAKE_SPEED);
+    }
+
+    public void startForwardFeed(){
+        intakeMotorL.setVelocity(Configuration.INTAKE_SPEED);
+        intakeMotorR.setVelocity(Configuration.INTAKE_SPEED);
+    }
+
+    public void disableFeeder(){
+        intakeMotorL.stop();
+        intakeMotorR.stop();
+    }
     public bool isReadyToFire(){
         if(current_state = FLYWHEEL_STATE.IDLE){
             return true;

@@ -63,6 +63,17 @@ public class ManualDrive extends LinearOpMode {
                 launcher.isReadyToFire()){
                 launcher.launch_ball();
             }
+            if(InputManager.getInstance().getGamepad1().left_bumper){
+                launcher.startReverseFeed();
+            }
+            else if(InputManager.getInstance().getGamepad1().right_bumper){
+                launcher.startForwardFeed();
+            }
+            // if both the inputs are the same, then disable the feeder.
+            if(InputManager.getInstance().getGamepad1().right_bumper==
+                InputManager.getInstance().getGamepad1().left_bumper){
+                    launcher.disableFeeder();
+            }
 		}
     }
     private void update_movement() {

@@ -36,5 +36,7 @@ public class Configuration {
 	public static double LAUNCHER_FEED_SPEED = 1/3;
 
 	public static double LAUNCH_MULTIPLIER = 1.f;
+
+	public static double INTAKE_SPEED = 6*Math.PI;
     
 }
