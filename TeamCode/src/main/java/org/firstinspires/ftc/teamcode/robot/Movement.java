@@ -84,7 +84,7 @@ public class Movement {
     public void UpdateRobot(Telemetry telemetry) {
         // TODO: Add position tracker
         // TODO: Need to fix, since motor direction were updated
-        Arrays.fill(motors_velocity,0.0);			
+        Arrays.fill(motors_velocity,0.0);	
 		double total_magnitude=abs(movement_vector.get(0))+abs(movement_vector.get(1))+abs(turn_rate);
         
 		double FB_mag, TR_mag, LR_mag;
@@ -111,19 +111,19 @@ public class Movement {
         for (int i=0;i<motors_velocity.length; i++) {
             motors_velocity[i]+=FB_drive*FB_mag;
         }
-        //  L/R
+        // L/R
         motors_velocity[0]+=LR_drive*LR_mag;
         motors_velocity[1]-=LR_drive*LR_mag;
         motors_velocity[2]-=LR_drive*LR_mag;
         motors_velocity[3]+=LR_drive*LR_mag;
 
         // Turning (Need to invert certain motors)
-        motors_velocity[0]-=turn_rate*TR_mag;
+        motors_velocity[0]+=turn_rate*TR_mag;
         motors_velocity[1]+=turn_rate*TR_mag;
         motors_velocity[2]-=turn_rate*TR_mag;
-        motors_velocity[3]+=turn_rate*TR_mag;
+        motors_velocity[3]-=turn_rate*TR_mag;
 
-        //Set motor Speed
+        // Set motor Speed
         for (int i=0;i<motors.length; i++) {
             addMotorTelemetry(i, telemetry);
             // all of our calcs use power, but motor uses rads
@@ -138,7 +138,7 @@ public class Movement {
         // WARNING: IT LOOKS LIKE STICK X AND Y ARE IN THE WRONG PLACES BUT
         // SOMETHING ELSE IN THE CODE IS BROKEN, SO THIS MAKES EVERYTHING WORK
         // MOVEMENT WILL BREAK IF YOU CHANGE THIS BACK
-		movement_vector = new VectorF(stick_y*(float)Configuration.DRIVE_SCALE, stick_x*(float)Configuration.DRIVE_SCALE);
+		movement_vector = new VectorF(stick_x*(float)Configuration.DRIVE_SCALE, stick_y*(float)Configuration.DRIVE_SCALE);
     }
     // Get heading from the odometer
     public double getHeading() {
